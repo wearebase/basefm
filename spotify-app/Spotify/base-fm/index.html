@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Base FM</title>
+    <link rel="stylesheet" href="sp://import/css/adam.css">
+    <link rel="stylesheet" href="styles.css">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+
+</head>
+<body onload="sp = getSpotifyApi(1); functions = sp.require('functions'); functions.init();">
+<div class="container">	
+	<h1 id="header">Base FM</h1>
+	<div id="intro-text">Loading!</div>
+	<div class="explanation-text"><p>Base FM is Twitter powered, crowd generated playlists. Provide a Twitter username/hashtag (or both) and songs tweeted @ that account, or including that hashtag will be added to your playlist.</p>
+	</div>
+	<div class="comment-form">
+	<form action="http://www.adamburt.com/satsp.php" id="search-form" method="post">
+	<input type="text" name="s" class="blurValue" id="twitter-name" value="last known username" />
+    <input type="text" name="h" class="blurValue" id="twitter-hashtag" value="last known hashtag" />
+	<input type="hidden" id="userfill" name="user_id" value="placeholder" />
+	<input type="submit" id="submit" value="Save" />
+	</form>
+	</div>
+	<div class="results-area">
+	<h2>Upcoming Songs</h2>
+	<p class="small-info">Current song:<br /> Songs in Queue:</p>
+    <div class="save-playlist"><a href="">Save Playlist to your library</a></div>
+	<div id="playlist">Fetching playlist...</div>
+	</div>
+</div>
+</body>
+</html>
