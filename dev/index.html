@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+	<title>Tweet Music</title>
+	<style>
+		body {
+			font-family: sans-serif;
+		}
+	</style>
+</head>
+<body>
+
+<h1>Tweet Music</h1>
+<h2>By Dave Hulbert</h2>
+<h3>Version 0.2</h3>
+
+<ol>
+	<li>Find a track on Spotify</li>
+	<li>Copy its URI (e.g. spotify:track:sometrackid)</li>
+	<li>Tweet "@wearebasefm #play spotify:track:sometrackid optional message" (can be a mention, doesn't have to be a reply)</li>
+	<li>Leave this page open for up to 15 seconds</li>
+	<li>Set your browser to open Spotify links without asking you each time</li>
+</ol>
+
+
+<iframe src="about:blank" id="s" width="1" height="1" style="position: absolute; left: -9999em;"></iframe>
+
+<h2>Playlist</h2>
+
+<ul id="playlist">
+</ul>
+
+<h2>Log</h2>
+<pre id="log" style="width: 100%; height: 200px; overflow: scroll; background: #eee"></pre>
+
+<h2>To do</h2>
+<pre>
+Only start new tracks after the length of the previous track has elapsed
+Queue tracks
+Customizible twitter name
+Save stuff in cookies
+Show tweets / profile pic
+Log times
+Global rate limit - no new tracks too quickly
+Allow tracks to be played after 100 other tracks have been played
+Play with other music players (iTunes)?
+Allow adding http links to tracks
+Admin twitter users who can add playlists/albums, veto tracks and skip the queue
+Tweet track/album names and look up in API
+</pre>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+
+<script>
+
+var username       = 'wearebasefm', 
+  interval         = 15*1000, 
+  tracks           = [],
+  json_to_jsonp    = 'http://pipes.yahoo.com/pipes/pipe.run?_id=29053b7ff74d5086a97cb14ad3ba0aba&_render=json&_callback=?&url=',
+  spotify_metadata = 'http://ws.spotify.com/lookup/1/.json?uri=';
+
+function log(s) {
+	window.console && console.log(s);
+  var d = new Date();
+	$('#log').append('[' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + '] ' + s + "\n");
+}
+
+function get_track_info(track, callback) {
+  var url = json_to_jsonp + encodeURIComponent(spotify_metadata + track);
+  $.getJSON(url, function(d) {
+    //log(d);
+    if (d && d.value && d.value.items && d.value.items[0] && d.value.items[0].track) {
+      var metadata = d.value.items[0].track;
+      if (metadata.artists && metadata.artists.name && metadata.name && metadata.album && metadata.album.name && metadata.length) {
+        callback({
+          artist: metadata.artists.name,
+          album: metadata.album.name,
+          title: metadata.name,
+          length: metadata.length
+        });
+      }
+    }
+  });
+};
+
+function play_track(uri) {
+    var i = $('#s');
+  	if (tracks.indexOf(uri) === -1) {
+  		log('Playing track: ' + uri);
+    	i.attr('src', uri);
+    	tracks.push(uri);
+      get_track_info(uri, function(data) {
+        var mmss =  (data.length/60|0) + 'm' +  ((data.length%60)|0) + 's';
+        $('#playlist').append(
+          '<li>' + 
+            data.artist + ' - ' + data.album + ' - ' + 
+            data.title + ' (' + mmss + ')' + 
+            '</li>'
+          );
+      });
+  	} else {
+  		log('Already playing track: ' + uri);
+  	}
+}
+
+
+function get_track(text) {
+    var match =  /spotify:track:[a-zA-Z0-9]+/.exec(text);
+    if (match) {
+     return match[0];   
+    }
+}
+
+function get_most_recent_tweet_text(callback) {
+	var url = 'http://search.twitter.com/search.json?q=' + username + '+%23play&callback=?';
+
+	$.getJSON(url, function(d) {
+    	if (d && d.results && d.results[0] && d.results[0].text) {
+    		var tweet = '<b>@' + d.results[0].from_user + '</b>: ' + d.results[0].text;
+    		log('Tweet: ' + tweet);
+    		callback(tweet);
+    	} else {
+        log('No tweets matching "' + username + ' #play" found yet.');
+      }
+	});
+}
+
+function play_most_recent_tweet() {
+	get_most_recent_tweet_text(function(tweet) {
+		var track = get_track(tweet);
+        if (track) {
+        	play_track(track);
+        } else {
+        	log('No track found in tweet: ' + tweet);
+        }
+	});
+}
+
+setInterval(play_most_recent_tweet, interval);
+play_most_recent_tweet();
+</script>
+
+</body>
+</html>
