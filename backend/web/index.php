@@ -8,8 +8,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 $app = new Silex\Application();
 
-$app['debug'] = true;
 $app['config'] = require_once __DIR__.'/../config.php';
+$app['debug'] = $app['config']['debug'];
+
+$app['dbh'] = null;
+
+$app->before(function () use ($app) {
+    $db = $app['config']['db'];
+    $app['dbh'] = new PDO($db['dsn'], $db['user'], $db['password']);
+});
+
 
 $app->get('/', function() { 
     return 'Hello!';
@@ -32,7 +40,6 @@ $app->get('/1/check', function(Request $request) use ($app) {
 
 
 $app->get('/1/now-playing', function(Request $request) use ($app) {
-    $since = (int) $request->get('since');
     $spotify_user_id = $request->get('user');
 
     // test tracks
@@ -93,6 +100,12 @@ $app->get('/1/stats', function(Request $request) use ($app) {
         'played'  => '5',
     ));
 }); 
+
+$app->get('/1/get-tweets', function(Request $request) use ($app) {
+    $tweets = json_decode(file_get_contents('http://search.twitter.com/search.json?q=wearebasefm'));
+    return $app->json($tweets);
+}); 
+
 
 
 $app->run();
