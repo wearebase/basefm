@@ -11,20 +11,20 @@
 <body onload="sp = getSpotifyApi(1); functions = sp.require('functions'); functions.init();">
 <div class="container">	
 	<h1 id="header">Base FM</h1>
-	<div id="intro-text">Loading!</div>
 	<div class="explanation-text"><p>Base FM is Twitter powered, crowd generated playlists. Provide a Twitter username/hashtag (or both) and songs tweeted @ that account, or including that hashtag will be added to your playlist.</p>
 	</div>
 	<div class="comment-form">
-	<form action="http://www.adamburt.com/satsp.php" id="search-form" method="post">
+	<form action="http://www.adamburt.com/satsp.php" id="save-form" method="post">
 	<input type="text" name="s" class="blurValue" id="twitter-name" value="last known username" />
     <input type="text" name="h" class="blurValue" id="twitter-hashtag" value="last known hashtag" />
 	<input type="hidden" id="userfill" name="user_id" value="placeholder" />
+    <input type="hidden" id="songfill" name="song_id" value="placeholder" />
 	<input type="submit" id="submit" value="Save" />
 	</form>
 	</div>
 	<div class="results-area">
 	<h2>Upcoming Songs</h2>
-	<p class="small-info">Current song:<br /> Songs in Queue:</p>
+	<p class="small-info">Current song: <span id="cur-song">None playing</span>, added to your playlist by <span id="tweeter">you</span>.<br /> Songs in Queue:</p>
     <div class="save-playlist"><a href="">Save Playlist to your library</a></div>
 	<div id="playlist">Fetching playlist...</div>
 	</div>

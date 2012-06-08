@@ -8,7 +8,9 @@ exports.init = init;
 function init() {
 
     updatePageWithTrackDetails();
-
+	
+	playSong();
+	
     player.observe(models.EVENT.CHANGE, function (e) {
 
         // Only update the page if the track changed
@@ -20,69 +22,60 @@ function init() {
 
 function updatePageWithTrackDetails() {
 
-    var header = document.getElementById("intro-text");
+    var current_song = document.getElementById("cur-song");
+	var tweeter = document.getElementById("tweeter");
 
     // This will be null if nothing is playing.
     var playerTrackInfo = player.track;
 	var userInfo = player.session;
 
     if (playerTrackInfo == null) {
-        header.innerText = "Nothing playing!";
+        current_song.innerText = "Nothing playing";
     } else {
         var track = playerTrackInfo.data;
-        header.innerHTML = "You are listening to " + track.name + ". Why not tell everyone else what you think of it?";
-		console.log(session.anonymousUserID);
+        current_song.innerHTML = track.name;
+		
+		//TODO: Fetch twitter user who suggested this track
+		twitter_user = "someone";
+		tweeter.innerHTML = twitter_user;
+		
 		jQuery(function($){
 			$('#userfill').val(session.anonymousUserID);
 			$('#songfill').val(track.uri);
 		});		
-		fetchCommentsForThisSong(track.uri, session.anonymousUserID);
 		
     }
 }
 
-function fetchCommentsForThisSong(song_id, user_id) {
-	console.log(song_id);
-    /*var req = new XMLHttpRequest();
-    req.open("GET", "http://adamburt.com/sats.php?song=" + song_id , true);
-	console.log("http://adamburt.com/sats.php?song=" + song_id );
-    req.onreadystatechange = function() {
-
-        console.log(req.status);
-
-        //if (req.readyState == 4) {
-           // if (req.status == 200) {
-                //console.log("Search complete!");
-                console.log(req.responseText);
-            //}
-        //}
-    };
-
-    req.send();*/
+function playSong(track_id){
 	
-	
-	var mygetrequest = new XMLHttpRequest();
-	mygetrequest.onreadystatechange=function(){
-	console.log(mygetrequest.readyState);
-	 if (mygetrequest.readyState==4){
-		console.log('Correct ready state');
-	  if (mygetrequest.status==200 || window.location.href.indexOf("http")==-1){
-		console.log('Status is correct, or the other weird thing');
-		console.log("Response: " + mygetrequest.responseText);
-		document.getElementById("result").innerHTML=mygetrequest.responseText
-	  }
-	  else{
-	   alert("An error has occured making the request")
-	  }
-	 }
-	}
-
-	mygetrequest.open("GET", "http://www.adamburt.com/sats.php?song=" + song_id + "&user=" + user_id, true)
-	mygetrequest.send(null);
-	
+	setTimeout(function(){
+	console.log(track_id);
+	player.play(track_id);
+	updatePageWithTrackDetails();
+	}, 1000);
+		
 }
 
 jQuery(function($){
+	var last_check = null;
+    var poll_time = 10 * 1000;
+    var api_url = 'http://basefm-api.dh.devba.se/1/check';
+	var user_id = $( '#userfill' ).val();
+
+	setInterval(function() {
+		var date = new Date();
+		var time = date.getTime();
+		var url = api_url + '?&user=' . user_id + 'since=' . time;
+		$.getJSON(api_url, function(data) {
+			for (var i in data) {
+				var track_id = data[i].id;
+				playSong(track_id);
+			}
+		});
+	
+	}, poll_time);
+	
 	// Remove value on click of input
 	$("input.blurValue:not(.wrong), textarea.blurValue:not(.wrong)").focus(function() {
 		if (this.value == this.defaultValue) {	this.value = ""; }
@@ -90,26 +83,30 @@ jQuery(function($){
 		if (this.value == "") { this.value = this.defaultValue; }
 	})
 	
-	$("#search-form").submit(function(event) {
+	//TODO: Populate save form with previous information based on user.
+		//Get details for this user
+		//$('#save-form') .val()'s...
+	
+	//TODO: For when users want to update their stuff
+	$("#save-form").submit(function(event) {
     /* stop form from submitting normally */
     event.preventDefault(); 
         
     /* get some values from elements on the page: */
     var $form = $( this ),
-        term = $form.find( 'textarea[name="s"]' ).val(),
-		song_id = $form.find( 'input[name="song_id"]' ).val(),
-		user_id = $form.find( 'input[name="user_id"]' ).val(),
+        tweeter = $form.find( 'textarea[name="s"]' ).val(),
+		hash = $form.find( 'textarea[name="h"]' ).val(),
+		user = $form.find('#userfill').val();
         url = $form.attr( 'action' );
 		
 
 		    /* Send the data using post and put the results in a div */
-			$.post( url, { s: term, user: user_id, song: song_id },
+			$.post( url, { s: tweeter, h: hash, user: user },
 				function( ) {
 				  
 				}
 			);
-			
-		fetchCommentsForThisSong(song_id, user_id);
-		$('#comment-actual').val('');
+
+		$('#save-result').val('');
 	});
 });

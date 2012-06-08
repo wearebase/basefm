@@ -12,6 +12,8 @@
     ],
 	"RequiredPermissions": [
         "http://fm.wearebase.com/",
-		"http://ajax.googleapis.com"
+		"http://ajax.googleapis.com",
+		"http://basefm-api.dh.devba.se",
+		"http://api.wearebase.com"
     ]
 }
