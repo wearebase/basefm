@@ -36,6 +36,8 @@ $app->get('/1/check', function(Request $request) use ($app) {
         array('id' => 'BROKEN!'),
         array('id' => 'spotify:track:3KWTRlId9U5SHNh56Ds1gz'),
     ));
+
+    // todo: look in db for new tracks since $since
 }); 
 
 
@@ -102,7 +104,21 @@ $app->get('/1/stats', function(Request $request) use ($app) {
 }); 
 
 $app->get('/1/get-tweets', function(Request $request) use ($app) {
-    $tweets = json_decode(file_get_contents('http://search.twitter.com/search.json?q=wearebasefm'));
+    $queries = $app['config']['twitter_searches'];
+
+    $tweets = array();
+
+    foreach ($queries as $query) {
+        $url = 'http://search.twitter.com/search.json?' . http_build_query(array(
+            'result_type' => 'recent',
+            'q' => $query,
+        ));
+        $response = json_decode(file_get_contents($url));
+        $tweets = array_merge($tweets, $response->results);        
+    }
+
+    // todo: add tweets to db
+
     return $app->json($tweets);
 }); 
 
