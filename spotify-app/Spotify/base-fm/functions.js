@@ -9,8 +9,6 @@ function init() {
 
     updatePageWithTrackDetails();
 	
-	playSong();
-	
     player.observe(models.EVENT.CHANGE, function (e) {
 
         // Only update the page if the track changed
@@ -49,11 +47,12 @@ function updatePageWithTrackDetails() {
 
 function playSong(track_id){
 	
-	setTimeout(function(){
-	console.log(track_id);
-	player.play(track_id);
-	updatePageWithTrackDetails();
-	}, 1000);
+	var t = models.Track.fromURI(track_id, function(track) {
+		
+		console.log("Track loaded:", track.name);
+		
+		player.play(track);
+	});
 		
 }
 
