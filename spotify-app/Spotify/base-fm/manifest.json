@@ -1,0 +1,17 @@
+{
+    "BundleType": "Application",
+	"BundleIdentifier": "base-fm",
+    "AppIcon": {
+        "36x18": "tutorial.png"
+    },
+    "AppName": {
+        "en": "Base FM"
+    },
+    "SupportedLanguages": [
+        "en"
+    ],
+	"RequiredPermissions": [
+        "http://fm.wearebase.com/",
+		"http://ajax.googleapis.com"
+    ]
+}
