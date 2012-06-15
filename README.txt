@@ -21,13 +21,20 @@ WordPress Widget
 Backend
 -------
 
+Requires:
+
+* PHP 5.3
+* Apache with mod-rewrite
+* A database (eg MySQL)
+* Access to set up cron tasks
+
 Installation:
 
 1. Copy config.sample.php to config.php
 2. Edit config.php
 3. Set up cron
 
-Version 1 (http://api.wearebase.com/1)
+Version 1 API endpoints (http://api.wearebase.com/1)
 
 /check?user=<userid>&since=<timestamp>
 /now-playing?user=<userid>
