@@ -16,7 +16,14 @@ function init() {
             updatePageWithTrackDetails();
         }
     });
+	
+
 }
+
+
+	var date = ""+new Date();
+	var playlist = new models.Playlist("FROON: " + date);	
+
 
 function updatePageWithTrackDetails() {
 
@@ -45,21 +52,27 @@ function updatePageWithTrackDetails() {
     }
 }
 
-function playSong(track_id){
-	
-	var t = models.Track.fromURI(track_id, function(track) {
-		
-		console.log("Track loaded:", track.name);
-		
-		player.play(track);
-	});
-		
+
+var tracks = new Array();
+function generatePlaylist(track_id){
+
+	//If this is not currently in playlist, add it to playlist
+	if( !(jQuery.inArray(track_id, tracks) > -1) ){
+		var t = models.Track.fromURI(track_id, function(track) {	
+			console.log("Track loaded:", track.name);			
+		});
+		tracks.push(track_id);
+		playlist.add(t);
+		updatePageWithTrackDetails();
+
+	}
+
 }
 
 jQuery(function($){
 	var last_check = null;
-    var poll_time = 10 * 1000;
-    var api_url = 'http://basefm-api.dh.devba.se/1/check';
+    var poll_time = 5 * 1000;
+    var api_url = 'http://api.wearebase.com/music/1/check';//'http://basefm-api.dh.devba.se/1/check';
 	var user_id = $( '#userfill' ).val();
 
 	setInterval(function() {
@@ -67,9 +80,13 @@ jQuery(function($){
 		var time = date.getTime();
 		var url = api_url + '?&user=' . user_id + 'since=' . time;
 		$.getJSON(api_url, function(data) {
+			var delay = 0;
 			for (var i in data) {
+				delay =+ 1000;
+				(function(){
 				var track_id = data[i].id;
-				playSong(track_id);
+				setTimeout(function() { generatePlaylist(track_id); }, delay);
+				}());
 			}
 		});
 	
