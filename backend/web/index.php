@@ -1,12 +1,18 @@
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+use Basefm\ApiV1;
+use Basefm\TweetRepository;
+use Basefm\NowPlayingRepository;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+$loader = require_once __DIR__.'/../vendor/autoload.php';
+//require_once __DIR__.'/../src/Basefm/Api.php';
 
+
+$loader->add('Basefm', __DIR__.'/../src/Basefm/');
+// TODO: move to controller bundles
 
 $app = new Silex\Application();
+
 
 $app['config'] = require_once __DIR__.'/../config.php';
 $app['debug'] = $app['config']['debug'];
@@ -16,111 +22,20 @@ $app['dbh'] = null;
 $app->before(function () use ($app) {
     $db = $app['config']['db'];
     $app['dbh'] = new PDO($db['dsn'], $db['user'], $db['password']);
+    $app['dbh']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
+
+    $app['tweet-repository'] = new TweetRepository($app['dbh']);
+    $app['nowplaying-repository'] = new NowPlayingRepository($app['dbh']);
 });
+
 
 
 $app->get('/', function() { 
     return 'Hello!';
 }); 
 
-$app->get('/1/check', function(Request $request) use ($app) {
-    $since = (int) $request->get('since');
-    $spotify_user_id = $request->get('user');
-
-    // test tracks
-    return $app->json(array(
-        array('id' => 'spotify:track:6JEK0CvvjDjjMUBFoXShNZ'),
-        array('id' => 'spotify:track:5LJN5trTe8v9XRLvqi9SUl'),
-        array('id' => 'spotify:track:5Xz0M0zDEanLfXdAgzOXvJ'),
-        array('id' => 'spotify:track:7sDZGHKFGRI82AwpdpFRrl'),
-        array('id' => 'BROKEN!'),
-        array('id' => 'spotify:track:3KWTRlId9U5SHNh56Ds1gz'),
-    ));
-
-    // todo: look in db for new tracks since $since
-}); 
-
-
-$app->get('/1/now-playing', function(Request $request) use ($app) {
-    $spotify_user_id = $request->get('user');
-
-    // test tracks
-    return $app->json(array(
-        'title'   => 'Hakuna Matata',
-        'artist'  => 'Disney',
-        'seconds' => '180',
-    ));
-}); 
-
-$app->get('/1/upcoming', function(Request $request) use ($app) {
-    $since = (int) $request->get('since');
-    $spotify_user_id = $request->get('user');
-
-    // test tracks
-    return $app->json(array(
-        array(
-            'title'   => 'Circle of Life',
-            'artist'  => 'Disney',
-            'seconds' => '150',
-        ),
-        array(
-            'title'   => 'Prodigy',
-            'artist'  => 'Fire Starter',
-            'seconds' => '240',
-        ),
-    ));
-}); 
-
-
-$app->get('/1/history', function(Request $request) use ($app) {
-    $since = (int) $request->get('since');
-    $spotify_user_id = $request->get('user');
-
-    // test tracks
-    return $app->json(array(
-        array(
-            'title'   => 'Circle of Life',
-            'artist'  => 'Disney',
-            'seconds' => '150',
-        ),
-        array(
-            'title'   => 'Prodigy',
-            'artist'  => 'Fire Starter',
-            'seconds' => '240',
-        ),
-    ));
-}); 
-
-
-$app->get('/1/stats', function(Request $request) use ($app) {
-    $since = (int) $request->get('since');
-    $spotify_user_id = $request->get('user');
-
-    // test tracks
-    return $app->json(array(
-        'tweets'   => '9999',
-        'played'  => '5',
-    ));
-}); 
-
-$app->get('/1/get-tweets', function(Request $request) use ($app) {
-    $queries = $app['config']['twitter_searches'];
-
-    $tweets = array();
-
-    foreach ($queries as $query) {
-        $url = 'http://search.twitter.com/search.json?' . http_build_query(array(
-            'result_type' => 'recent',
-            'q' => $query,
-        ));
-        $response = json_decode(file_get_contents($url));
-        $tweets = array_merge($tweets, $response->results);        
-    }
-
-    // todo: add tweets to db
-
-    return $app->json($tweets);
-}); 
+// v1 of the api
+$app->mount('/1', new ApiV1);
 
 
 
