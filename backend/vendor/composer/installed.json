@@ -3,7 +3,7 @@
         "name": "pimple/pimple",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
-        "time": "2012-05-08 13:57:24",
+        "time": "2012-05-08 11:57:24",
         "source": {
             "type": "git",
             "url": "git://github.com/fabpot/Pimple.git",
@@ -53,7 +53,7 @@
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "target-dir": "Symfony/Component/ClassLoader",
-        "time": "2012-05-15 06:44:52",
+        "time": "2012-05-15 04:44:52",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/ClassLoader",
@@ -108,7 +108,7 @@
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "target-dir": "Symfony/Component/EventDispatcher",
-        "time": "2012-05-15 20:19:31",
+        "time": "2012-05-15 18:19:31",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/EventDispatcher",
@@ -167,7 +167,7 @@
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "target-dir": "Symfony/Component/HttpFoundation",
-        "time": "2012-05-18 17:42:42",
+        "time": "2012-05-18 15:42:42",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/HttpFoundation",
@@ -220,7 +220,7 @@
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "target-dir": "Symfony/Component/HttpKernel",
-        "time": "2012-05-19 07:24:03",
+        "time": "2012-05-19 05:24:03",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/HttpKernel",
@@ -292,7 +292,7 @@
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "target-dir": "Symfony/Component/Routing",
-        "time": "2012-05-20 03:43:44",
+        "time": "2012-05-20 01:43:44",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/Routing",
@@ -354,7 +354,7 @@
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "target-dir": "Symfony/Component/Process",
-        "time": "2012-05-07 08:29:11",
+        "time": "2012-05-07 06:29:11",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/Process",
@@ -406,7 +406,7 @@
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "target-dir": "Symfony/Component/Finder",
-        "time": "2012-05-18 17:42:42",
+        "time": "2012-05-18 15:42:42",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/Finder",
@@ -458,7 +458,7 @@
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "target-dir": "Symfony/Component/DomCrawler",
-        "time": "2012-05-07 12:20:03",
+        "time": "2012-05-07 10:20:03",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/DomCrawler",
@@ -516,7 +516,7 @@
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "target-dir": "Symfony/Component/CssSelector",
-        "time": "2012-05-18 17:42:42",
+        "time": "2012-05-18 15:42:42",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/CssSelector",
@@ -568,7 +568,7 @@
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "target-dir": "Symfony/Component/BrowserKit",
-        "time": "2012-05-15 20:19:31",
+        "time": "2012-05-15 18:19:31",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/BrowserKit",
@@ -627,7 +627,7 @@
         "name": "silex/silex",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
-        "time": "2012-05-24 11:40:39",
+        "time": "2012-05-24 09:40:39",
         "source": {
             "type": "git",
             "url": "git://github.com/fabpot/Silex.git",

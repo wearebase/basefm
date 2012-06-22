@@ -19,4 +19,5 @@ return array(
     'Silex' => $baseDir . '/vendor/silex/silex/src/',
     'SessionHandlerInterface' => $baseDir . '/vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/Resources/stubs',
     'Pimple' => $baseDir . '/vendor/pimple/pimple/lib/',
+    'Basefm' => $baseDir . '/src/',
 );
