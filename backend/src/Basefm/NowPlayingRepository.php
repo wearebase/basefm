@@ -14,7 +14,7 @@ class NowPlayingRepository {
 
     public function add($track)
     {
-        error_log(implode(", ", $track));
+        error_log(implode(", ", (array) $track));
         
         return 1;
 

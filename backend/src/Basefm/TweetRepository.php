@@ -38,7 +38,6 @@ class TweetRepository {
 
     private function tweetExists($tweet)
     {
-        error_log($tweet->id_str);
         $sth = $this->dbh->prepare("SELECT COUNT(`id`)
                                  FROM `tweets`
                                  WHERE `id_str` = :id_str
