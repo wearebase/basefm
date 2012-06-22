@@ -37,6 +37,7 @@ class ApiV1 implements ControllerProviderInterface {
             $tweets = array_map(function($tweet) {
                 $tweet['text'] = preg_replace('/^[^"]*"/', '', $tweet['tweet']);
                 $tweet['text'] = preg_replace('/".*/', '', $tweet['text']);
+                $tweet['timestamp'] = strtotime($tweet['created']);
                 return $tweet;
             }, $tweets);
 
