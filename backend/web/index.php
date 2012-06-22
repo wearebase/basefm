@@ -2,6 +2,7 @@
 
 use Basefm\ApiV1;
 use Basefm\TweetRepository;
+use Basefm\NowPlayingRepository;
 
 $loader = require_once __DIR__.'/../vendor/autoload.php';
 //require_once __DIR__.'/../src/Basefm/Api.php';
@@ -24,6 +25,7 @@ $app->before(function () use ($app) {
     $app['dbh']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
 
     $app['tweet-repository'] = new TweetRepository($app['dbh']);
+    $app['nowplaying-repository'] = new NowPlayingRepository($app['dbh']);
 });
 
 

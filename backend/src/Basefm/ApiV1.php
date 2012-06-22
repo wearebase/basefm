@@ -60,12 +60,16 @@ class ApiV1 implements ControllerProviderInterface {
 
         // tell the server what's being played
         // todo: add to db, maybe search for the tweet it corresponds to
-        $apiv1->post('/currently-playing', function(Request $request) use ($apiv1) {
-            $since           = (int) $request->post('since');
-            $spotify_user_id = $request->post('user');
-            $track_data      = $request->post('track');
+        $apiv1->post('/currently-playing', function(Request $request) use ($app) {
 
-            return new JsonResponse(true);
+            $track = (object) array(
+                'user' => $request->get('user'),
+                'trackname' => $request->get('trackname'),
+                'tracklink' => $request->get('tracklink'),
+                'created' => date('Y-m-d H:i:s'),
+            );
+
+            return $app['nowplaying-repository']->add($track);
         }); 
 
 
