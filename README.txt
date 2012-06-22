@@ -5,6 +5,8 @@ Turn tweets into music! This is an unfinished work-in-progress.
 
 If you have Spotify, you can see the playlist that's being generated here: http://open.spotify.com/user/tomquay/playlist/6USVr60XeYrtYVs8xIe7il
 
+Screenshot of current playlist: http://i.imgur.com/oi2xa.png
+
 You can see what's currently being played by following @wearebasefm on Twitter: http://twitter.com/wearebasefm
 
 Tweet format
