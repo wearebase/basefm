@@ -28,9 +28,19 @@ class ApiV1 implements ControllerProviderInterface {
 
 
         // check if there's new tracks to add to playlist
-        $apiv1->get('/check', function(Request $request) use ($apiv1) {
-            $since = (int) $request->get('since');
+        $apiv1->get('/check', function(Request $request) use ($app) {
+            $since = (int) $request->get('since') ?: time() - 7200;
             $spotify_user_id = $request->get('user');
+
+            $tweets = $app['tweet-repository']->getAllSince($since);
+
+            $tweets = array_map(function($tweet) {
+                $tweet['text'] = preg_replace('/^[^"]*"/', '', $tweet['tweet']);
+                $tweet['text'] = preg_replace('/".*/', '', $tweet['text']);
+                return $tweet;
+            }, $tweets);
+
+            return new JsonResponse($tweets);
 
             // test tracks
             return new JsonResponse(array(
@@ -137,16 +147,15 @@ class ApiV1 implements ControllerProviderInterface {
 
             $response = array();
 
+            $added = 0;
+
             foreach ($tweets as $tweet) {
-                //$app['tweet-repository']->add($tweet);
-                
-                $text = $tweet->text;
-                $text = preg_replace('/^[^"]*"/', '', $text);
-                $text = preg_replace('/".*$/', '', $text);
-                $response[] = array(
-                    'text' => $text,
-                );
+                if ($app['tweet-repository']->add($tweet)) {
+                    $added++;
+                }
             }
+
+            return 'Added ' . $added . ' tweets';
 
             // todo: add tweets to db if they've not been added
 

@@ -14,36 +14,58 @@ class TweetRepository {
 
     public function add($tweet)
     {
-        $exists = $this->tweetExists($tweet);
+        if ($this->tweetExists($tweet)) {
+            error_log('Tweet ' . $tweet->id_str . ' exists');
+            return;
+        }
+
+        $sth = $this->dbh->prepare("INSERT INTO `tweets` SET 
+             `id_str`   = :id_str,
+             `tweet`    = :tweet,
+             `username` = :username,
+             `created`  = :created
+        ");
+
+        $sth->execute(array(
+            'id_str'   => $tweet->id_str,
+            'tweet'    => $tweet->text,
+            'username' => $tweet->from_user,
+            'created'  => date('Y-m-d H:i:s'),
+        ));
+
+        return true;
     }
 
-    private function tweetExists($tweet) {
-        $id = $tweet->id_str;
-    
-
+    private function tweetExists($tweet)
+    {
+        error_log($tweet->id_str);
         $sth = $this->dbh->prepare("SELECT COUNT(`id`)
                                  FROM `tweets`
                                  WHERE `id_str` = :id_str
                                  ");
 
         $sth->execute(array(
-            'id_str' => $id,
+            'id_str' => ''.$tweet->id_str,
         ));
 
-        $row = $sth->fetch(PDO::FETCH_NUM);
+        return (bool) $sth->fetchColumn();
 
-        var_dump($row);
-
-        $sth->execute(array(
-            'date_from' => $app['weeks_ago_3'],
-            'date_to'   => $app['weeks_ago_2'],
-        ));
-
-        $row = $sth->fetch(PDO::FETCH_NUM);
-        $total_last_week = @$row[0];
 
     }
 
+    public function getAllSince($since)
+    {
+        $sth = $this->dbh->prepare("SELECT *
+                                 FROM `tweets`
+                                 WHERE `created` >= :since
+                                 ");
+
+        $sth->execute(array(
+            'since' => date('Y-m-d H:i:s', $since),
+        ));
+
+        return $sth->fetchAll(\PDO::FETCH_ASSOC);        
+    }
 
 }
 

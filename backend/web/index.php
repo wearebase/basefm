@@ -21,15 +21,11 @@ $app['dbh'] = null;
 $app->before(function () use ($app) {
     $db = $app['config']['db'];
     $app['dbh'] = new PDO($db['dsn'], $db['user'], $db['password']);
-    
-    $app['tweet-repository'] = new TweetRepository($db);
+    $app['dbh']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
+
+    $app['tweet-repository'] = new TweetRepository($app['dbh']);
 });
 
-// $app->register(new Acme\DatabaseServiceProvider(), array(
-//     'database.dsn'      => 'mysql:host=localhost;dbname=myapp',
-//     'database.user'     => 'root',
-//     'database.password' => 'secret_root_password',
-// ));
 
 
 $app->get('/', function() { 
