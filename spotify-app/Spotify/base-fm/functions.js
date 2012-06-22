@@ -14,6 +14,8 @@ function init() {
         // Only update the page if the track changed
         if (e.data.curtrack == true) {
             updatePageWithTrackDetails();
+			
+			tellTheSite();
         }
     });
 	
@@ -23,7 +25,7 @@ function init() {
 
 	var date = ""+new Date();
 	var playlist = new models.Playlist("FROON: " + date);	
-
+    var api_url = 'http://api.wearebase.com/music/1';//'http://basefm-api.dh.devba.se/1/check';
 
 function updatePageWithTrackDetails() {
 
@@ -52,10 +54,40 @@ function updatePageWithTrackDetails() {
     }
 }
 
+function tellTheSite(){
+	
+	console.log('It is time to tell the site');
+    // This will be null if nothing is playing.
+    var playerTrackInfo = player.track;
+	var userInfo = player.session.anonymousUserID;	
+	var track = playerTrackInfo.data;
+	var track_name = track.name;
+	var track_uri = track.uri
+	
+	jQuery.post(api_url+'/currently-playing', {
+		user : 'userInfo',
+		trackname: 'track_name',
+		tracklink: 'track_uri'
+	}, function(){
+		console.log('Site told');	
+	});
+}
+
+function searchForURI(track) {
+	var URI;
+	console.log("Searching for… " + track);
+	sp.core.search(track, true, true, {
+		onSuccess: function(result) {
+		//return the URI of the first track
+		URI = result.tracks[0].uri; //grabbing the URI at index 0…
+		generatePlaylist(URI);
+	}
+	});
+}
 
 var tracks = new Array();
 function generatePlaylist(track_id){
-
+	
 	//If this is not currently in playlist, add it to playlist
 	if( !(jQuery.inArray(track_id, tracks) > -1) ){
 		var t = models.Track.fromURI(track_id, function(track) {	
@@ -68,29 +100,36 @@ function generatePlaylist(track_id){
 	}
 
 }
-
+var date = new Date();
+var time = date.getTime()/1000 - (24*60*60);
+console.log(time);
 jQuery(function($){
 	var last_check = null;
     var poll_time = 5 * 1000;
-    var api_url = 'http://api.wearebase.com/music/1/check';//'http://basefm-api.dh.devba.se/1/check';
 	var user_id = $( '#userfill' ).val();
 
-	setInterval(function() {
-		var date = new Date();
-		var time = date.getTime();
-		var url = api_url + '?&user=' . user_id + 'since=' . time;
-		$.getJSON(api_url, function(data) {
+	function poll() {
+		var url = api_url + '/check?&user=' + user_id + '&since=' + time;
+		$.getJSON(url, function(data) {
 			var delay = 0;
 			for (var i in data) {
 				delay =+ 1000;
 				(function(){
-				var track_id = data[i].id;
-				setTimeout(function() { generatePlaylist(track_id); }, delay);
+				var track_id = data[i].text;
+				var latest = data[i].timestamp;
+				time = latest + 1;
+				console.log(latest);
+				setTimeout(function() { 
+					searchForURI(track_id); }, delay);
 				}());
 			}
 		});
-	
-	}, poll_time);
+
+
+	}
+
+	setInterval(poll, poll_time);
+	poll();
 	
 	// Remove value on click of input
 	$("input.blurValue:not(.wrong), textarea.blurValue:not(.wrong)").focus(function() {
