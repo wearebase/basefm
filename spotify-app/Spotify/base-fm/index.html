@@ -6,27 +6,39 @@
     <link rel="stylesheet" href="sp://import/css/adam.css">
     <link rel="stylesheet" href="styles.css">
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
-
+                    
 </head>
 <body onload="sp = getSpotifyApi(1); functions = sp.require('functions'); functions.init();">
 <div class="container">	
 	<h1 id="header">Base FM</h1>
-	<div class="explanation-text"><p>Base FM is Twitter powered, crowd generated playlists. Provide a Twitter username/hashtag (or both) and songs tweeted @ that account, or including that hashtag will be added to your playlist.</p>
+	
+	<div class="explanation-text">
+		<p>Tweet:</p>
+		<pre>	<code>#MD17Music "artist track name"</code></pre>
 	</div>
-	<div class="comment-form">
-	<form action="http://www.adamburt.com/satsp.php" id="save-form" method="post">
-	<input type="text" name="s" class="blurValue" id="twitter-name" value="last known username" />
-    <input type="text" name="h" class="blurValue" id="twitter-hashtag" value="last known hashtag" />
-	<input type="hidden" id="userfill" name="user_id" value="placeholder" />
-    <input type="hidden" id="songfill" name="song_id" value="placeholder" />
-	<input type="submit" id="submit" value="Save" />
-	</form>
+	
+	
+	<div id="guide">
+		<h2>Setup Guide</h2>
+		<ol>
+			<li>1. Add this app to your favourites</li>
+			<li>2. Manually create a new playlist (or choose an old one)</li>
+			<li>3. Drag the playlist to this app's link in the left menu</li>
+			<li>4. Wait for tracks to be added to the playlist</li>
+			<li>5. Start the playlist playing</li>
+			<li>5. Keep this app open (you can moderate tracks on the playlist but always come back here)</li>
+		</ol>
+		<p>If something breaks: Ctrl-Alt-R</p>
 	</div>
+	
+	<p><strong id="playlistname">Drag the playlist to this app's link in the left menu</strong></p>
+	
 	<div class="results-area">
-	<h2>Songs and contributors</h2>
-	<p class="small-info">Current song: <span id="cur-song">None playing</span>, added to your playlist by <span id="tweeter">you</span>.<br /> Songs in Queue:</p>
-    <p class="other-contributors">Other contributors</p>
+		<pre id="baselog" style="height: 200px; width:90%;font:monospace;overflow:scroll;border: 1px solid #fff"></pre>
 	</div>
+	<input type="button" onclick="jQuery('#baselog').text('')" value="Clear log">
+	<input type="button" id="clearplaylist" value="Remove all songs from playlist">
+	<input type="button" id="cleartrackcache" value="Forget twitter data">
 </div>
 </body>
 </html>

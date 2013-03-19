@@ -15,5 +15,8 @@
 		"http://ajax.googleapis.com",
 		"http://basefm-api.dh.devba.se",
 		"http://api.wearebase.com"
-    ]
+    ],
+	"AcceptedLinkTypes": [
+		"playlist"
+	]
 }

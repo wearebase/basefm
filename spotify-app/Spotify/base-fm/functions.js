@@ -3,79 +3,68 @@ var models = sp.require('sp://import/scripts/api/models');
 var player = models.player;
 var session = models.session;
 
+var playlist;
+
+var poller;
+var tracks = [];
+
+var date = new Date();
+var time = date.getTime()/1000 - (24*60*60);
+
+//var playlist = new models.Playlist("FROON: " + date);	
+var api_url = 'http://basefm.dh.devba.se/backend/web/1';
+
+
+function baselog(str) {
+	console.log(str);
+	jQuery("#baselog").prepend("<br>[" + (new Date().toISOString()) + "] "+str);
+}
+
 exports.init = init;
+
+if (localStorage.getItem("playlist")) {
+	var playlistname = localStorage.getItem("playlist");
+	playlist = models.Playlist.fromURI(playlistname);
+	$("#playlistname").text('Got playlist: '+playlistname);
+	baselog('Got playlist from sessionStorage: '+playlistname);
+}
+
+models.application.observe(models.EVENT.LINKSCHANGED, function() {
+	//console.log(models.application.links);
+
+	playlist = models.Playlist.fromURI(models.application.links[0]);
+	$("#playlistname").text('Got playlist: '+models.application.links[0]);
+	baselog('Got playlist: '+models.application.links[0]);
+	localStorage.setItem("playlist", models.application.links[0]);
+	baselog('Clearing track cache');
+	tracks = [];
+	time = date.getTime()/1000 - (24*60*60);
+	//console.log(playlist);
+});
 
 function init() {
 
-    updatePageWithTrackDetails();
+    //updatePageWithTrackDetails();
 	
     player.observe(models.EVENT.CHANGE, function (e) {
-
+		//poller = setInterval(poll, poll_time);
         // Only update the page if the track changed
-        if (e.data.curtrack == true) {
-            updatePageWithTrackDetails();
+      //  if (e.data.curtrack == true) {
+        //    updatePageWithTrackDetails();
 			
-			tellTheSite();
-        }
+			//tellTheSite();
+       // }
     });
 	
 
 }
 
 
-	var date = ""+new Date();
-	var playlist = new models.Playlist("FROON: " + date);	
-    var api_url = 'http://api.wearebase.com/music/1';//'http://basefm-api.dh.devba.se/1/check';
 
-function updatePageWithTrackDetails() {
-
-    var current_song = document.getElementById("cur-song");
-	var tweeter = document.getElementById("tweeter");
-
-    // This will be null if nothing is playing.
-    var playerTrackInfo = player.track;
-	var userInfo = player.session;
-
-    if (playerTrackInfo == null) {
-        current_song.innerText = "Nothing playing";
-    } else {
-        var track = playerTrackInfo.data;
-        current_song.innerHTML = track.name;
-		
-		//TODO: Fetch twitter user who suggested this track
-		twitter_user = "someone";
-		tweeter.innerHTML = twitter_user;
-		
-		jQuery(function($){
-			$('#userfill').val(session.anonymousUserID);
-			$('#songfill').val(track.uri);
-		});		
-		
-    }
-}
-
-function tellTheSite(){
-	
-	console.log('It is time to tell the site');
-    // This will be null if nothing is playing.
-    var playerTrackInfo = player.track;
-	var userInfo = player.session.anonymousUserID;	
-	var track = playerTrackInfo.data;
-	var track_name = track.name;
-	var track_uri = track.uri
-	
-	jQuery.post(api_url+'/currently-playing', {
-		user : 'userInfo',
-		trackname: 'track_name',
-		tracklink: 'track_uri'
-	}, function(){
-		console.log('Site told');	
-	});
-}
 
 function searchForURI(track) {
 	var URI;
-	console.log("Searching for… " + track);
+	baselog("Searching for: " + track);
 	sp.core.search(track, true, true, {
 		onSuccess: function(result) {
 		//return the URI of the first track
@@ -85,83 +74,82 @@ function searchForURI(track) {
 	});
 }
 
-var tracks = new Array();
 function generatePlaylist(track_id){
 	
 	//If this is not currently in playlist, add it to playlist
 	if( !(jQuery.inArray(track_id, tracks) > -1) ){
 		var t = models.Track.fromURI(track_id, function(track) {	
-			console.log("Track loaded:", track.name);			
+			baselog("Track loaded: " + track.name);
 		});
 		tracks.push(track_id);
-		playlist.add(t);
-		updatePageWithTrackDetails();
+		if (playlist.indexOf(t) === -1) {
+			playlist.add(t);
+			//console.log(playlist.tracks, playlist.indexOf(t));
+		} else {
+			baselog("Track already in playlist: " + t.name);
+		}
+		//updatePageWithTrackDetails();
+	} else {
+		baselog("Skipping track: " + track.name);
 
 	}
 
 }
-var date = new Date();
-var time = date.getTime()/1000 - (24*60*60);
-console.log(time);
-jQuery(function($){
+
+//console.log(time);
+//jQuery(function($){
 	var last_check = null;
     var poll_time = 5 * 1000;
 	var user_id = $( '#userfill' ).val();
 
 	function poll() {
+		if (!playlist) {
+			baselog("No playlist yet");
+			
+			return;
+		}
+		
+		baselog("Polling for new tracks");
+		
 		var url = api_url + '/check?&user=' + user_id + '&since=' + time;
-		$.getJSON(url, function(data) {
+		jQuery.getJSON(url, function(data) {
 			var delay = 0;
-			for (var i in data) {
+			var i = -1;
+			for (i in data) {
 				delay =+ 1000;
 				(function(){
 				var track_id = data[i].text;
 				var latest = data[i].timestamp;
 				time = latest + 1;
-				console.log(latest);
+				//console.log(latest);
 				setTimeout(function() { 
 					searchForURI(track_id); }, delay);
 				}());
 			}
+			baselog("Got "+(1+parseInt(i, 10))+' tracks since '+time);
 		});
 
 
 	}
 
-	setInterval(poll, poll_time);
+	poller = setInterval(poll, poll_time);
 	poll();
-	
-	// Remove value on click of input
-	$("input.blurValue:not(.wrong), textarea.blurValue:not(.wrong)").focus(function() {
-		if (this.value == this.defaultValue) {	this.value = ""; }
-	}).blur(function() {
-		if (this.value == "") { this.value = this.defaultValue; }
-	})
-	
-	//TODO: Populate save form with previous information based on user.
-		//Get details for this user
-		//$('#save-form') .val()'s...
-	
-	//TODO: For when users want to update their stuff
-	$("#save-form").submit(function(event) {
-    /* stop form from submitting normally */
-    event.preventDefault(); 
-        
-    /* get some values from elements on the page: */
-    var $form = $( this ),
-        tweeter = $form.find( 'textarea[name="s"]' ).val(),
-		hash = $form.find( 'textarea[name="h"]' ).val(),
-		user = $form.find('#userfill').val();
-        url = $form.attr( 'action' );
-		
 
-		    /* Send the data using post and put the results in a div */
-			$.post( url, { s: tweeter, h: hash, user: user },
-				function( ) {
-				  
-				}
-			);
-
-		$('#save-result').val('');
-	});
+jQuery('#clearplaylist').click(function() {
+	if (!playlist) {
+		return;
+	}
+	while(playlist.length) {
+		playlist.remove(playlist.get(0));
+	}
+	baselog("Cleared playlist");
 });
+
+
+jQuery('#cleartrackcache').click(function() {
+	tracks = [];
+	time = date.getTime()/1000 - (24*60*60);	
+	baselog("Cleared track cache");
+});
+
+

@@ -1,9 +1,12 @@
 .container {
 	width:700px;
 	margin:auto;
-	font-size:14px;
+	/*font-size:14px;*/
 	height:100%;
+	padding: 20px;
+	margin: 20px;
 }
+/*
 #header {
 	font-size:40px;
 	margin:40px 0px;
@@ -11,6 +14,8 @@
 #intro-text, .explanation-text {
 	margin-bottom:10px;
 }
+*/
+/*
 .comment-form {
 	margin:auto;
 	margin-top:60px;
@@ -21,6 +26,8 @@
 	border-right:3px #999 solid;
 	border-top:3px #999 solid;
 }
+*/
+/*
 .results-area {
 	margin:auto;
 	padding-top:60px;
@@ -30,8 +37,9 @@
 	padding-left:25px;
 	padding-right:25px;
 	border-left:3px #999 solid;
-	border-right:3px #999 solid;
-}
+	border-right:3px #999 solid;*/
+}*/
+/*
 #comment-actual {
 	border-top:none;
 	border-right:none;
@@ -39,7 +47,8 @@
 	width:345px;
 	border-bottom:1px solid #999;
 	border-radius:0px;
-}
+}*/
+/*
 h2 {
 	color:#000000;
 	font-size:26px;
@@ -71,4 +80,4 @@ h2 {
 }
 .comments-ul li.own-comment{
 	background-color:#DEFC59;
-}
+}*/
