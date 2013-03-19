@@ -12,7 +12,8 @@ var date = new Date();
 var time = date.getTime()/1000 - (24*60*60);
 
 //var playlist = new models.Playlist("FROON: " + date);	
-var api_url = 'http://basefm.dh.devba.se/backend/web/1';
+//var api_url = 'http://basefm.dh.devba.se/backend/web/1';
+var api_url = 'http://api.wearebase.com/music/1';
 
 
 function baselog(str) {
