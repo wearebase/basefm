@@ -1,7 +1,13 @@
 Base FM
 =======
 
-Turn tweets into music!
+Turn tweets into music! This is an unfinished work-in-progress.
+
+If you have Spotify, you can see the playlist that's being generated here: http://open.spotify.com/user/tomquay/playlist/6USVr60XeYrtYVs8xIe7il
+
+Screenshot of current playlist: http://i.imgur.com/oi2xa.png
+
+You can see what's currently being played by following @wearebasefm on Twitter: http://twitter.com/wearebasefm
 
 Tweet format
 ------------
@@ -31,6 +37,8 @@ We haven't really made this yet. You can see the general idea in
 Backend
 -------
 
+Uses Silex framework.
+
 Requires:
 
 * PHP 5.3
@@ -44,6 +52,9 @@ Installation:
 2. Edit config.php
 3. Set up cron: "* * * * * curl http://api.wearebase.com/music/1/get-tweets > /dev/null"
 
+API:
+
+Currently only JSON
 
 Version 1 API endpoints (http://api.wearebase.com/music/1):
 
